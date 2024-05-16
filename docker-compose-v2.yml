@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  prestashop:
+    image: prestashop/prestashop:latest 
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+      - redis
+    environment:
+      DB_SERVER: db
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+      REDIS-SERVER: redis
+    volumes: # trwałe przechowywanie danych
+      - prestashop-data:/var/www/html 
+    healthcheck: # monitorowanie potencjalnych problemow
+      test: ["CMD", "curl", "-f", "http://localhost"] 
+      interval: 1m30s 
+      timeout: 20s 
+      retries: 3 
+      start_period: 40s
+
+
+  db:
+    image: percona:psmdb-6.0.6
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  prestashop-data:
+  db-data:
+  redis-data:
