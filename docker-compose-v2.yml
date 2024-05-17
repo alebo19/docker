@@ -3,7 +3,7 @@ services:
   prestashop:
     image: prestashop/prestashop:latest 
     ports:
-      - "8081:80"
+      - "8082:80"
     depends_on:
       - db
       - redis
