@@ -4,16 +4,14 @@ services:
     ports:
       - "8082:80"
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      - db
+      - redis
     environment:
       DB_SERVER: db
       DB_USER: ${MYSQL_USER}
       DB_PASSWD: ${MYSQL_PASSWORD}
       DB_PREFIX: ps_
-      DB_NAME: prestashop
+      DB_NAME: ${MYSQL_DATABASE}
       REDIS_SERVER: redis
       PS_DOMAIN: localhost:8082
       PS_INSTALL_AUTO: 1
